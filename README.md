@@ -12,8 +12,9 @@ Terminal output may also be logged to file.
 ## Usage
 
 ```
+import { Terminal } from 'playwright-terminal';
+
 test('ls', async ({ page }) => {
-    import { Terminal } from 'playwright-terminal';
     var terminal = new Terminal(page, { logsEnabled: true, logDir: "."});
     await terminal.Execute("ls", ["-la"])
 });

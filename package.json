@@ -3,6 +3,7 @@
     "@playwright/test": "^1.17.2"
   },
   "dependencies": {
+    "ansi_up": "^5.1.0",
     "node-pty": "^0.10.1",
     "xterm": "^4.16.0",
     "xterm-addon-fit": "^0.5.0"

@@ -45,7 +45,7 @@ class Terminal {
         }
 
         var command = executable;
-        var logFile = `${Date.now()}_command`;
+        var logFile = `${Date.now()}_${command}`;
         var content = "";
         if (args) {
             var argText = args.join('_').replaceAll("/", "_").replaceAll("\\", "_");
@@ -74,7 +74,7 @@ class Terminal {
 
             ptyProcess.onExit(function(exitcode, signal){
                 if (self.logsEnabled) {
-                    fs.writeFile(`${self.logDir}/${logFile}`, content, err => {
+                    fs.writeFile(`${self.logDir}/${logFile}`, handleAnsiEscapeCodes(content), err => {
                         if (err) {
                             console.error(err)
                             return
@@ -88,35 +88,26 @@ class Terminal {
 
 }
 
-async function ptyshell(page, executable, args) {
-    const modulepath = __dirname;
-    await page.goto(`file://${modulepath}/test.html`);
-    
-    var command = executable;
-    if (args) {
-        command = `${command} ${args.join(' ')}`;
-    }
-    await page.evaluate(item => { writeToConsole(item); }, `$ ${command}\r\n`);
+// Remove all ANSI Escape Codes from text.
+// Codes that move the cursor are obeyed to avoid duplicated content.
+function handleAnsiEscapeCodes(input) {
+    var AU = require('ansi_up');
+    var ansi_up = new AU.default;
+    var html = ansi_up.ansi_to_html(input);
+    return stripHTML(html);
+}
 
-    return new Promise(function (resolve, reject) {
-        var ptyProcess = pty.spawn(executable, args, {
-            name: 'xterm-color',
-            cols: 80,
-            rows: 30,
-            cwd: process.cwd(),
-            env: process.env
-        });
-
-        ptyProcess.onData(async function(data) {
-            await page.evaluate(item => { writeToConsole(item); }, `${data}`);
-        })
-
-        ptyProcess.onExit(function(exitcode, signal){
-            return resolve(exitcode);
-        });
-    });
+function stripHTML(input) {
+    var out = input.replace(/(<([^>]+)>)/gi, "")
+    const htmlEntities = {
+        "&amp;" : "&",
+        "&lt;" : "<",
+        "&gt;" : ">",
+        "&quot;" : '"',
+        "&apos;" : "'"
+      };
+    out = out.replace(/(&[a-z]+;)/g, match => htmlEntities[match]);
+    return out;
 }
 
 exports.Terminal = Terminal;
-exports.ptyshell = ptyshell;
-

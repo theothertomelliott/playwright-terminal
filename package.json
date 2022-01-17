@@ -9,7 +9,7 @@
     "xterm-addon-fit": "^0.5.0"
   },
   "name": "playwright-terminal",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Run terminal commands during a Playwright test with video-friendly output",
   "main": "index.js",
   "directories": {

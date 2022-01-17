@@ -48,7 +48,7 @@ class Terminal {
         var logFile = `${Date.now()}_${command}`;
         var content = "";
         if (args) {
-            var argText = args.join('_').replaceAll("/", "_").replaceAll("\\", "_");
+            var argText = args.join('_').replaceAll("/", "_").replaceAll("\\", "_").replaceAll(":","_");
             logFile = `${logFile}_${argText}.log`;
             command = `${command} ${args.join(' ')}`;
         }
